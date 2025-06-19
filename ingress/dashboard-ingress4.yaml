@@ -1,0 +1,25 @@
+# dashboard-ingress.yaml (Final Version)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubernetes-dashboard-ingress
+  namespace: kubernetes-dashboard
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: dashboard.k3s.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # The service name is still the same
+            name: kubernetes-dashboard-kong-proxy
+            port:
+              # IMPORTANT: Change the port to 9090
+              number: 9090
+  tls:
+  - hosts:
+    - dashboard.k3s.local
+    secretName: dashboard-k3s-local-tls

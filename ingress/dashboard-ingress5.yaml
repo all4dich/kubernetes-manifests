@@ -1,0 +1,26 @@
+# dashboard-ingress.yaml (Definitive Final Version)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubernetes-dashboard-ingress
+  namespace: kubernetes-dashboard
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: dashboard.k3s.local
+    http:
+      paths:
+      - path: /dashboard/
+        pathType: Prefix
+        backend:
+          service:
+            name: kubernetes-dashboard-kong-proxy
+            port:
+              # Ensure this port matches the helm command
+              number: 443
+  tls:
+  # This section tells Traefik to secure the connection from the browser.
+  # By removing the "secretName" line, we are telling Traefik to use its
+  # own default self-signed certificate, which fixes the "secret not found" error.
+  - hosts:
+    - dashboard.k3s.local

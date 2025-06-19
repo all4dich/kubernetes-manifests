@@ -1,0 +1,10 @@
+# dashboard-transport.yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: ServersTransport
+metadata:
+  name: dashboard-transport
+  namespace: kubernetes-dashboard
+spec:
+  # This is the crucial setting. It tells Traefik to not verify the
+  # TLS certificate of the backend dashboard service.
+  insecureSkipVerify: true
