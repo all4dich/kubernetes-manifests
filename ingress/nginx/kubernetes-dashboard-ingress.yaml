@@ -10,6 +10,8 @@ metadata:
     # This annotation is crucial because the dashboard service itself listens on HTTPS.
     # It tells the NGINX Ingress Controller to communicate with the backend service over HTTPS.
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/secure-backends: "true"
 spec:
   # This specifies which Ingress Controller will satisfy this Ingress.
   # 'nginx' is the default class name for the NGINX Ingress Controller.
