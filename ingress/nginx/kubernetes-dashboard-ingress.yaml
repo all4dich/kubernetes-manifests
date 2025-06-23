@@ -1,0 +1,31 @@
+# kubernetes-dashboard-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  # The name of the Ingress resource
+  name: kubernetes-dashboard-ingress
+  # IMPORTANT: This must be in the same namespace as the dashboard service
+  namespace: kubernetes-dashboard
+  annotations:
+    # This annotation is crucial because the dashboard service itself listens on HTTPS.
+    # It tells the NGINX Ingress Controller to communicate with the backend service over HTTPS.
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  # This specifies which Ingress Controller will satisfy this Ingress.
+  # 'nginx' is the default class name for the NGINX Ingress Controller.
+  ingressClassName: nginx
+  rules:
+  # Define a routing rule. You can add more rules for other hosts.
+  - host: dashboard.k8s.sunjoo.org
+    http:
+      paths:
+      # All traffic for the host 'dashboard.k8s.sunjoo.org' at the root path '/' will be routed.
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # This is the correct service name based on your Helm chart's deployment.
+            name: kubernetes-dashboard-kong-proxy
+            port:
+              # The service port that exposes the dashboard's HTTPS endpoint.
+              number: 443
