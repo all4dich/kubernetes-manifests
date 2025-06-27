@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-pvc
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: slow
+  volumeMode: Filesystem
+  nfs:
+      path: /mnt/share/k8s/minio
+      server: 192.168.64.4
+  claimRef:
+    namespace: kubeflow
+    name: minio-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-claim
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: slow
+  volumeMode: Filesystem
+  nfs:
+      path: /mnt/share/k8s/mysql
+      server: 192.168.64.4
+  claimRef:
+    namespace: kubeflow
+    name: mysql-pv-claim
