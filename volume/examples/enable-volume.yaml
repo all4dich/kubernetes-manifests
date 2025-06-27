@@ -1,0 +1,98 @@
+# WARNING: Use this configuration for single-node development clusters ONLY.
+# It is NOT suitable for multi-node or production environments because the data
+# is tied to a specific node's filesystem.
+
+# -------------------
+# --- StorageClass for Kubeflow ---
+# -------------------
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: kubeflow-hostpath
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+# ----------------------------------------------------
+# --- PersistentVolume for Kubeflow MySQL/Metadata ---
+# ----------------------------------------------------
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kubeflow-mysql-pv
+  labels:
+    app: kubeflow
+spec:
+  capacity:
+    storage: 10Gi # Smaller size for local dev
+  volumeMode: Filesystem
+  # ReadWriteOnce is the typical access mode for hostPath, as the volume
+  # can only be mounted by pods on the single node where the path exists.
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: kubeflow-hostpath
+  # hostPath-specific configuration
+  # IMPORTANT: The directory specified in 'path' MUST exist on your Kubernetes node.
+  # For Docker Desktop or Minikube, you may need to SSH into the node to create it:
+  # e.g., `minikube ssh -- sudo mkdir -p /mnt/data/kubeflow/mysql`
+  hostPath:
+    path: "/mnt/data/kubeflow/mysql"
+    type: DirectoryOrCreate # This will create the directory if it doesn't exist
+
+---
+# ------------------------------------------------
+# --- PersistentVolume for Kubeflow MinIO Artifacts ---
+# ------------------------------------------------
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kubeflow-minio-pv
+  labels:
+    app: kubeflow
+spec:
+  capacity:
+    storage: 20Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: kubeflow-hostpath
+  hostPath:
+    path: "/mnt/data/kubeflow/minio"
+    type: DirectoryOrCreate
+
+---
+# ------------------------------------------------------
+# --- PersistentVolumeClaim for Kubeflow MySQL/Metadata ---
+# ------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  namespace: kubeflow
+spec:
+  storageClassName: kubeflow-hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# --------------------------------------------------
+# --- PersistentVolumeClaim for Kubeflow MinIO Artifacts ---
+# --------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-pv-claim
+  namespace: kubeflow
+spec:
+  storageClassName: kubeflow-hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
