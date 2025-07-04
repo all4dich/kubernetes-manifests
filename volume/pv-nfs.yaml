@@ -12,7 +12,7 @@ spec:
   volumeMode: Filesystem
   nfs:
       path: /mnt/share/k8s/minio
-      server: 192.168.64.4
+      server: 10.128.0.13
   claimRef:
     namespace: kubeflow
     name: minio-pvc
@@ -31,7 +31,28 @@ spec:
   volumeMode: Filesystem
   nfs:
       path: /mnt/share/k8s/mysql
-      server: 192.168.64.4
+      server: 10.128.0.13
   claimRef:
     namespace: kubeflow
     name: mysql-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: katib-mysql
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  nfs:
+    path: /mnt/share/k8s/katib-mysql
+    server: 10.128.0.13
+  volumeMode: Filesystem
+  claimRef:
+    namespace: kubeflow
+    name: katib-mysql
+
+
