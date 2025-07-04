@@ -1,0 +1,19 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: user-all4dich-gmail-com-clusterrole-admin
+  namespace: my-profile
+  annotations:
+    role: ClusterRole/kubeflow-admin
+    user: all4dich@gmail.com
+spec:
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"
+              - "cluster.local/ns/kubeflow/sa/ml-pipeline-ui"
+      when:
+        - key: request.headers[kubeflow-userid]
+          values:
+            - all4dich@gmail.com
